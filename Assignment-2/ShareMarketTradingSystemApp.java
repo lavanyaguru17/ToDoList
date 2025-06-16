@@ -26,12 +26,21 @@ public class ShareMarketTradingSystemApp {
             market.addStock(new Stock(id, name, price, quantity));
         }
 
-        Trader[] traders = new Trader[3];
-        for (int i = 0; i < traders.length; i++) {
-            System.out.print("\nEnter name for Trader " + (i + 1) + ": ");
-            String name = scanner.nextLine();
-            traders[i] = new Trader(i + 1, name, market);
+        
+        System.out.print("\nEnter number of traders: ");
+        int numTraders = Integer.parseInt(scanner.nextLine());
+
+        Trader[] traders = new Trader[numTraders];
+        for (int i = 0; i < numTraders; i++) {
+            String traderName;
+            do {
+                System.out.print("Enter name for Trader " + (i + 1) + ": ");
+                traderName = scanner.nextLine().trim();
+            } while (traderName.isEmpty());
+
+            traders[i] = new Trader(i + 1, traderName, market);
         }
+
 
         for (Trader trader : traders) {
             trader.start();
@@ -40,7 +49,52 @@ public class ShareMarketTradingSystemApp {
         for (Trader trader : traders) {
             trader.join();
         }
+        
+        
+        for (Trader trader : traders) {
+            System.out.println("\n\t\t\tTrader " + trader.getTraderName() + " (ID: " + trader.getTraderId() + ")");
 
+            while (true) {
+                System.out.println("1. BUY");
+                System.out.println("2. SELL");
+                System.out.println("3. EXIT");
+                System.out.print("Enter choice: ");
+
+                String choice = scanner.nextLine().trim();
+
+                if (choice.equals("3")) {
+                    break;  
+                }
+
+                System.out.print("Enter Stock ID: ");
+                String stockId = scanner.nextLine().trim().toUpperCase();
+
+                System.out.print("Enter Quantity: ");
+                int quantity;
+                try {
+                    quantity = Integer.parseInt(scanner.nextLine());
+                } catch (NumberFormatException e) {
+                    System.out.println("Invalid quantity. Try again.");
+                    continue;
+                }
+
+                switch (choice) {
+                    case "1":
+                        trader.buyStock(stockId, quantity);
+                        break;
+                    case "2":
+                        trader.sellStock(stockId, quantity);
+                        break;
+                    default:
+                        System.out.println("Invalid choice. Please enter 1, 2, or 3.");
+                }
+            }
+        }
+
+
+        
+        
+        
         System.out.println("\n\t\t\tFinal Trader Portfolios\t\t\t");
         for (Trader trader : traders) {
             trader.printPortfolio();
